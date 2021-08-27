@@ -102,4 +102,13 @@ mod tests {
         assert_eq!(expected.len(), actual.len());
         assert_eq!(&expected[1], actual[1]);
     }
+
+    #[test]
+    fn get_borrow_events_returns_none() {
+        let actual_attr = vec!(Attribute { key: "action".to_string(), value: "not_borrow".to_string()});
+        let txs = vec!(Transaction { logs: vec!(Log { events: vec!(Event { attributes: actual_attr})})});
+        let actual = get_borrow_events(&txs);
+
+        assert_eq!(None, actual);
+    }
 }
