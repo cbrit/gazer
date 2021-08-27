@@ -12,15 +12,23 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn get_transactions(json: String) -> Vec<Transaction> {
-    let resp: Response = serde_json::from_str(json.as_str()).expect("failed to deserialize json to Response");
-    let txs: Vec<Transaction> = resp.data.txs;
-    txs
+// Unsure how to figure out the ErrorKind that from_str returns, so 
+// we'll just log failed deserializations and move on.
+fn get_transactions(json: String) -> Option<Vec<Transaction>> {
+    let resp: Response = match serde_json::from_str(json.as_str()) {
+        Ok(r) => r,
+        Err(err) =>  {
+            eprintln!("{}", err);
+            return None
+        },
+    };
+
+    Some(resp.data.txs)
 }
 
-// fn get_borrow_events(txs: Vec<Transaction>) -> Vec<Event> {
+fn get_borrow_events(txs: Vec<Transaction>) -> Option<Vec<Event>> {
     
-// }
+}
 
 #[cfg(test)]
 mod tests {
@@ -41,12 +49,20 @@ mod tests {
         ]
     }
 }
-        "#;
+        "#.to_string();
 
         let mut expected = Vec::new();
         expected.push(Transaction { logs: vec![] });
         expected.push(Transaction { logs: vec![] });
         let actual = get_transactions(j);
+
+        assert_eq!(expected, actual.unwrap());
+    }
+    
+    #[test]
+    fn get_transactions_returns_none_if_deserialization_fails() {
+        let expected = None;
+        let actual = get_transactions("surprise!".to_string());
 
         assert_eq!(expected, actual);
     }
