@@ -2,10 +2,8 @@ pub mod extract;
 pub mod listen;
 pub mod models;
 
-use listen::Subscribe;
 use models::{Borrower};
 use std::error::Error;
-use std::fs;
 
 pub fn run() -> Result<(), Box<dyn Error>> {
     // let json = fs::read_to_string("response.json").unwrap();
