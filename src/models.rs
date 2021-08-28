@@ -1,4 +1,3 @@
-use serde::Deserialize;
 use serde_derive::Deserialize;
 
 pub const BORROW_ACTION: &str = "borrow_stable";
@@ -27,24 +26,24 @@ pub struct Log {
     pub events: Vec<Event>,
 }
 
-#[derive(Deserialize, Debug, PartialEq)]
+#[derive(Clone, Deserialize, Debug, PartialEq)]
 // make Event type enum with BorrowEvent variant?
 pub struct Event {
     pub attributes: Vec<Attribute>,
 }
 
-#[derive(Deserialize, Debug, PartialEq)]
+#[derive(Clone, Deserialize, Debug, PartialEq)]
 pub struct Attribute {
     pub key: String,
     pub value: String,
 }
 
 // Models for saving state data
-#[derive(Deserialize)]
-struct Borrower {
-    address: String,
-    total_borrowed: u128,
-    borrow_events: Vec<Event>
+#[derive(Debug, Deserialize)]
+pub struct Borrower {
+    pub address: String,
+    pub total_borrowed: u128,
+    pub borrow_events: Vec<Event>
 }
 
 impl Borrower {
