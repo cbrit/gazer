@@ -1,13 +1,16 @@
 pub mod models;
 
-use models::{Response, Transaction, Log, Event, Attribute};
+use models::{Borrower, Response, Transaction, Event};
 use std::error::Error;
 use std::fs;
 
 pub fn run() -> Result<(), Box<dyn Error>> {
     let json = fs::read_to_string("response.json").unwrap();
-    let txs = get_transactions(json);
-    // let borrow_events = get_borrow_events(txs);
+    let txs = get_transactions(json).unwrap();
+    let borrow_events = get_borrow_events(&txs).unwrap();
+    let borrowers: Vec<Borrower> = borrow_events.into_iter().map(Borrower::new).collect();
+
+    println!("{:?}", borrowers);
 
     Ok(())
 }
@@ -27,16 +30,15 @@ fn get_transactions(json: String) -> Option<Vec<Transaction>> {
 }
 
 // Look at using Iterators and adaptors to refactor this.
-fn get_borrow_events<'a>(txs: &'a Vec<Transaction>) -> Option<Vec<&'a Event>> {
-    let mut results: Vec<&Event> = Vec::new();
+fn get_borrow_events(txs: &Vec<Transaction>) -> Option<Vec<Event>> {
+    let mut results: Vec<Event> = Vec::new();
 
     for tx in txs {
         for log in &tx.logs {
-            'event_loop: for event in &log.events {
+            'event_loop: for event in log.events.clone() {
                 for attr in &event.attributes {
-                    println!("{:?}" , attr);
                     if attr.value == "borrow_stable".to_string() {
-                        results.push(&event);
+                        results.push(event);
                         continue 'event_loop;
                     }
                 }
