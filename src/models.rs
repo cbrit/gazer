@@ -47,7 +47,7 @@ pub struct Borrower {
 }
 
 impl Borrower {
-    pub fn new(mut event: Event)  -> Self {
+    pub fn new(event: Event)  -> Self {
         if Self::is_borrow_event(&event) == false {
             // Need better error handling here
             panic!("attempted to construct a Borrower from invalid Event");
