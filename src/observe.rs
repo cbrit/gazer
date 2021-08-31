@@ -66,8 +66,10 @@ pub fn handle_new_block_stream(uri: String, tx: Sender<String>) {
             // Listen for new_block messages and relay them over the channel
             info!("Begin relaying new_block messages");
             loop {
-                websocket.relay_messages(&sender);
-                info!("Data written to channel");
+                match websocket.relay_messages(&sender) {
+                    Ok(_) => info!("Data written to channel"),
+                    Err(err) => error!("{:?}", err),
+                }
             }
         });
 
