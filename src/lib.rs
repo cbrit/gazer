@@ -4,8 +4,10 @@ pub mod models;
 
 use models::{Borrower};
 use serde_derive::Deserialize;
+use std::{fs, thread};
 use std::error::Error;
-use std::fs;
+use std::sync::mpsc;
+use std::sync::mpsc::{Sender, Receiver};
 
 #[derive(Deserialize, PartialEq)]
 pub struct Config {
@@ -23,18 +25,14 @@ impl Config {
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    // let json = fs::read_to_string("response.json").unwrap();
-    let json = match observe::receive() {
-        Some(j) => j,
-        None => panic!("Didn't receive any json output"),
-    };
-    let txs = extract::get_transactions(json).unwrap();
-    let borrow_events = extract::get_borrow_events(&txs).unwrap();
-    let borrowers: Vec<Borrower> = borrow_events.into_iter().map(Borrower::new).collect();
+    let (obs_uri, addr, port) = (config.observer_uri, config.server_address, config.server_port);
+    
+    let (obs_tx, obs_rx): (Sender<String>, Receiver<String>) = mpsc::channel();
+    let observer_thread = thread::spawn(move || {
+        observe::handle_new_block_stream(obs_uri, obs_tx);
+    });
 
-    println!("{:?}", borrowers);
-
-    Ok(())
+    
 }
 
 #[cfg(test)]
