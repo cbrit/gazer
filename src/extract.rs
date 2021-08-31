@@ -1,4 +1,4 @@
-use crate::models::{Event, Response, Transaction};
+use crate::models::{Attribute, Event, Log, Response, Transaction};
 
 // Unsure how to figure out the ErrorKind that from_str returns, so 
 // we'll just log failed deserializations and move on.
@@ -87,7 +87,7 @@ mod tests {
         let actual = get_borrow_events(&txs).unwrap();
 
         assert_eq!(expected.len(), actual.len());
-        assert_eq!(&expected[1], actual[1]);
+        assert_eq!(expected[1], actual[1]);
     }
 
     #[test]
