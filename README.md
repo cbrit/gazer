@@ -1,7 +1,7 @@
 # Gazer
 A project for the Code Challenge given by the [Anchor](https://github.com/Anchor-Protocol) team
 
-Gazer listens for `new_block` messages over a websocket connection to [observer.terra.dev] and extracts event information about UST borrowed on Anchor Protocol.
+Gazer listens for `new_block` messages over a websocket connection to `observer.terra.dev` and extracts event information about UST borrowed on Anchor Protocol.
 
 ## Usage
 
