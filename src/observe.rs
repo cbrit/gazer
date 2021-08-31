@@ -73,6 +73,7 @@ pub fn handle_new_block_stream(uri: String, tx: Sender<String>) {
             }
         });
 
+        // If the connection closes, log the error and re-open it
         match observer_thread.join() {
             Err(err) => {
                 match err.as_ref().downcast_ref::<String>() {
