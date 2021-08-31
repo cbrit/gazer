@@ -2,7 +2,7 @@ pub mod extract;
 pub mod observe;
 pub mod models;
 
-use log::{debug, error, log_enabled, info, Level};
+use log::{info};
 use models::{Borrower};
 use serde_derive::Deserialize;
 use std::{fs, thread};
@@ -27,18 +27,18 @@ impl Config {
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    let (obs_uri, addr, port) = (config.observer_uri, config.server_address, config.server_port);
+    let obs_uri = config.observer_uri;
     
     // Observer websocket keepalive thread
     info!("Starting observer keepalive thread");
     let (obs_tx, obs_rx): (Sender<String>, Receiver<String>) = mpsc::channel();
-    let observer_thread = thread::spawn(move || {
+    let _observer_thread = thread::spawn(move || {
         observe::handle_new_block_stream(obs_uri, obs_tx);
     });
 
     // Borrow information extraction keepalive thread
     info!("Starting Borrower extraction keepalive thread");
-    let (ext_tx, ext_rx): (Sender<Vec<Borrower>>, Receiver<Vec<Borrower>>) = mpsc::channel();
+    let (ext_tx, _ext_rx): (Sender<Vec<Borrower>>, Receiver<Vec<Borrower>>) = mpsc::channel();
     let extract_thread = thread::spawn(move || {
         let obs_rx = Arc::new(Mutex::new(obs_rx));
         extract::handle_extract_borrow_data(obs_rx, ext_tx);

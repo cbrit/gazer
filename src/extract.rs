@@ -1,4 +1,4 @@
-use log::{debug, error, info, warn};
+use log::{debug, error, info};
 use std::sync::mpsc::{Sender, Receiver};
 use std::sync::{Arc, Mutex};
 use std::thread;

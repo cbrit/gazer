@@ -1,5 +1,4 @@
 use log::{debug, error, info, warn};
-use std::any::Any;
 use std::net::TcpStream;
 use std::sync::mpsc::{Sender, SendError};
 use std::thread;
@@ -10,17 +9,16 @@ use tungstenite::protocol::Message;
 use tungstenite::stream::MaybeTlsStream;
 use url::Url;
 
-pub const OBSERVER_ADDRESS: &str = "ws://observer.terra.dev";
+pub const OBSERVER_ADDRESS: &str = "wss://observer.terra.dev";
 pub const NEW_BLOCK_SUBSCRIPTION: &str = "{ \"subscribe\": \"new_block\", \"chain_id\": \"columbus-4\" }";
 
 pub trait Subscribe {
-    fn subscribe(&mut self, uri: String) -> Result<(), tungstenite::error::Error>;
+    fn subscribe(&mut self) -> Result<(), tungstenite::error::Error>;
     fn relay_messages(&mut self, sender: &Sender<String>) -> Result<(), SendError<String>>;
 }
 
 impl Subscribe for WebSocket<MaybeTlsStream<TcpStream>> {
-    fn subscribe(&mut self, uri: String) -> Result<(), tungstenite::error::Error> {
-        let url = Url::parse(uri.as_str()).unwrap();
+    fn subscribe(&mut self) -> Result<(), tungstenite::error::Error> {
         self.write_message(Message::Text(NEW_BLOCK_SUBSCRIPTION.to_string()))
     }
     
@@ -60,7 +58,7 @@ pub fn handle_new_block_stream(uri: String, tx: Sender<String>) {
             let (mut websocket, _response) = get_connection(uri.as_str());
 
             info!("Subscribing to new_block stream...");
-            match websocket.subscribe(uri) {
+            match websocket.subscribe() {
                 Err(err) => return Err(err),
                 _ => (),
             };

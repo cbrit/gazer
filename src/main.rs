@@ -1,5 +1,5 @@
 use std::process;
-use log::{debug, error, log_enabled, info, Level};
+use log::{error, info};
 
 use gazer::Config;
 
