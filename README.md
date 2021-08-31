@@ -9,6 +9,7 @@ Because of the bug noted in the Bugs section, I've provided the `example_success
 
 ## Needed improvements
 
+- `Release` profile
 - Refactor iterations with adaptors
 - Integration tests
 - More unit tests
