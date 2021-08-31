@@ -15,6 +15,7 @@ Because of the bug noted in the Bugs section, I've provided the `example_success
 - More unit tests
 - A webserver presenting the Borrower tally
 - Custom `Deserializer` for Observer messages for better error handling
+- More idiomatic `Borrower` construction logic
 
 ## Structure
 
