@@ -1,3 +1,4 @@
+use log::{debug, error, info, warn};
 use std::sync::mpsc::{Sender, Receiver};
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -7,10 +8,11 @@ use crate::models::*;
 // Unsure how to figure out the ErrorKind that from_str returns, so 
 // we'll just log failed deserializations and move on.
 pub fn get_transactions(json: String) -> Option<Vec<Transaction>> {
-    let resp: Response = match serde_json::from_str(json.as_str()) {
+    let resp: Response = match serde_json::from_str(&json.as_str()) {
         Ok(r) => r,
         Err(err) =>  {
-            eprintln!("{}", err);
+            error!("{}", err);
+            debug!("{:?}", &json);
             return None
         },
     };
@@ -52,7 +54,7 @@ pub fn handle_extract_borrow_data(obs_rx: Arc<Mutex<Receiver<String>>>, tx: Send
                 let txs = match get_transactions(json) {
                     Some(result) => result,
                     None => {
-                        eprintln!("transactions yielded None");
+                        debug!("transactions yielded None");
                         continue;
                     },
                 };
@@ -60,14 +62,14 @@ pub fn handle_extract_borrow_data(obs_rx: Arc<Mutex<Receiver<String>>>, tx: Send
                 let borrow_events = match get_borrow_events(&txs) {
                     Some(events) => events,
                     None =>  {
-                        println!("No borrow events");
+                        info!("Block contained no borrow events");
                         continue;
                     },
                 };
 
                 let borrowers: Vec<Borrower> = borrow_events.into_iter().map(Borrower::new).collect();
 
-                println!("Borrowers: {:?}", borrowers);
+                info!("Borrowers: {:?}", borrowers);
                 sender.send(borrowers);
             }
         });
