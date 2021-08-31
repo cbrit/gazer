@@ -11,7 +11,7 @@ use std::sync::{Arc, Mutex};
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
 
-#[derive(Deserialize, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct Config {
     observer_uri: String,
     server_address: String,
@@ -60,7 +60,9 @@ mod tests {
             server_address: "localhost".to_string(),
             server_port: 7878,
         };
-        let actual = Config::new("config.json");
+        let actual = Config::new("config.json").unwrap();
+
+        assert_eq!(expected, actual);
     }
 
     // Need more tests but my lack of error handling knowledge in Rust is slowing me down.
