@@ -70,7 +70,9 @@ pub fn handle_extract_borrow_data(obs_rx: Arc<Mutex<Receiver<String>>>, tx: Send
                 let borrowers: Vec<Borrower> = borrow_events.into_iter().map(Borrower::new).collect();
 
                 info!("Borrowers: {:?}", borrowers);
-                sender.send(borrowers);
+                sender.send(borrowers).unwrap_or_else(|err| {
+                    error!("{:?}", err);
+                });
             }
         });
 
