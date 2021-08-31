@@ -1,0 +1,20 @@
+[2021-08-31T16:08:48Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:08:56Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:09:03Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:09:09Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:09:16Z ERROR gazer::extract] missing field `logs` at line 1 column 110821
+[2021-08-31T16:09:22Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:09:29Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:09:36Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:09:42Z ERROR gazer::extract] missing field `logs` at line 1 column 140448
+[2021-08-31T16:09:49Z ERROR gazer::extract] missing field `logs` at line 1 column 178627
+[2021-08-31T16:09:55Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:10:02Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:10:09Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:10:16Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:10:23Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:10:29Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:10:36Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:10:43Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:10:50Z INFO  gazer::extract] Block contained no borrow events
+[2021-08-31T16:10:56Z INFO  gazer::extract] Borrowers: [Borrower { address: "terra1xs4duc0w7upahe4ye62chya333xwnd4s6zc7ey", total_borrowed: 1000000000, borrow_events: [Event { attributes: [Attribute { key: "contract_address", value: "terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s" }, Attribute { key: "action", value: "borrow_stable" }, Attribute { key: "borrower", value: "terra1xs4duc0w7upahe4ye62chya333xwnd4s6zc7ey" }, Attribute { key: "borrow_amount", value: "1000000000" }] }] }]
