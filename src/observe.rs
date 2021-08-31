@@ -24,7 +24,10 @@ impl Subscribe for WebSocket<MaybeTlsStream<TcpStream>> {
     fn relay_messages(&mut self, sender: &Sender<String>) {
         let msg = self.read_message().unwrap();
         let msg: String = msg.to_string();
-        sender.send(msg).unwrap();
+        
+        if msg.len() > 0 {
+            sender.send(msg).unwrap();
+        }
     }
 }
 

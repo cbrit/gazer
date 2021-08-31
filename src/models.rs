@@ -6,12 +6,12 @@ pub const BORROWER_KEY: &str = "borrower";
 pub const CONTRACT_ADDR_KEY: &str = "contract_address";
 
 // Models for drilling down into the JSON response
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Response {
     pub data: Data,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Data {
     pub txs: Vec<Transaction>,
 }
