@@ -39,7 +39,7 @@ pub struct Attribute {
 }
 
 // Models for saving state data
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct Borrower {
     pub address: String,
     pub total_borrowed: u128,
@@ -113,7 +113,8 @@ mod tests {
         };
 
         let actual = Borrower::new(event);
-        
+
+        assert_eq!(expected, actual);
     }
 
     #[test]
