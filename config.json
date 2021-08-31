@@ -1,5 +1,5 @@
 {
     "observer_uri": "wss://observer.terra.dev/",
     "server_address": "localhost",
-    "server_port": "7878"
+    "server_port": 7878
 }
