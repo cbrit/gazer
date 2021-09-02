@@ -25,7 +25,6 @@ pub fn get_transactions(json: String) -> Option<Vec<Transaction>> {
     Some(resp)
 }
 
-// Look at using Iterators and adaptors to refactor this.
 pub fn get_borrow_events(txs: Vec<Transaction>) -> Option<Vec<Event>> {
     let results: Vec<Event> = txs
         .into_iter()
