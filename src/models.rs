@@ -18,10 +18,10 @@ pub struct Data {
 
 #[derive(Deserialize, Debug, PartialEq)]
 pub struct Transaction {
-    pub logs: Vec<Log>,
+    pub logs: Option<Vec<Log>>,
 }
 
-#[derive(Deserialize, Debug, PartialEq)]
+#[derive(Clone, Deserialize, Debug, PartialEq)]
 pub struct Log {
     pub events: Vec<Event>,
 }

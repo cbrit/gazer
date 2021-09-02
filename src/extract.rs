@@ -12,36 +12,43 @@ pub fn get_transactions(json: String) -> Option<Vec<Transaction>> {
         Ok(r) => r,
         Err(err) =>  {
             error!("{}", err);
-            debug!("{:?}", &json);
-            return None
+            return None;
         },
     };
-    
-    Some(resp.data.txs)
+
+    let resp: Vec<Transaction> = resp.data.txs
+        .into_iter()
+        .filter(|t| {
+            t.logs.is_some()
+        }).collect();
+
+    Some(resp)
 }
 
 // Look at using Iterators and adaptors to refactor this.
-pub fn get_borrow_events(txs: &Vec<Transaction>) -> Option<Vec<Event>> {
+pub fn get_borrow_events(txs: Vec<Transaction>) -> Option<Vec<Event>> {
     let mut results: Vec<Event> = Vec::new();
 
     for tx in txs {
-        for log in &tx.logs {
-            'event_loop: for event in log.events.clone() {
-                for attr in &event.attributes {
-                    if attr.value == "borrow_stable".to_string() {
-                        results.push(event);
-                        continue 'event_loop;
-                    }
-                }
-            }
-        }
+        let logs: Vec<Log> = tx.logs
+            .into_iter()
+            .flatten()
+            .collect();
+
+        results.extend(logs
+            .into_iter()
+            .flat_map(|log| log.events)
+            .filter(|event| {
+                event.attributes.iter().any(|attr| attr.value == "borrow_stable")
+            })
+        );
     }
 
-    if results.len() > 0 {
-        return Some(results);
+    if results.len() == 0 {
+        return None;
     }
     
-    None
+    Some(results)
 }
 
 pub fn handle_extract_borrow_data(obs_rx: Arc<Mutex<Receiver<String>>>, tx: Sender<Vec<Borrower>>) {
@@ -59,7 +66,7 @@ pub fn handle_extract_borrow_data(obs_rx: Arc<Mutex<Receiver<String>>>, tx: Send
                     },
                 };
 
-                let borrow_events = match get_borrow_events(&txs) {
+                let borrow_events = match get_borrow_events(txs) {
                     Some(events) => events,
                     None =>  {
                         info!("Block contained no borrow events");
