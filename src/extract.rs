@@ -27,24 +27,17 @@ pub fn get_transactions(json: String) -> Option<Vec<Transaction>> {
 
 // Look at using Iterators and adaptors to refactor this.
 pub fn get_borrow_events(txs: Vec<Transaction>) -> Option<Vec<Event>> {
-    let mut results: Vec<Event> = Vec::new();
+    let results: Vec<Event> = txs
+        .into_iter()
+        .flat_map(|tx| tx.logs)
+        .into_iter()
+        .flatten()
+        .flat_map(|log| log.events)
+        .filter(|event| {
+            event.attributes.iter().any(|attr| attr.value == "borrow_stable")
+    }).collect();
 
-    for tx in txs {
-        let logs: Vec<Log> = tx.logs
-            .into_iter()
-            .flatten()
-            .collect();
-
-        results.extend(logs
-            .into_iter()
-            .flat_map(|log| log.events)
-            .filter(|event| {
-                event.attributes.iter().any(|attr| attr.value == "borrow_stable")
-            })
-        );
-    }
-
-    if results.len() == 0 {
+    if results.is_empty() {
         return None;
     }
     
