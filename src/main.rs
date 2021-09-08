@@ -1,5 +1,5 @@
-use std::process;
 use log::{error, info};
+use std::process;
 
 use gazer::Config;
 
@@ -9,7 +9,7 @@ fn main() {
     env_logger::init();
 
     info!("Starting up");
-    info!("Loading config"); 
+    info!("Loading config");
     let config = Config::new(CONFIG_FILE).unwrap_or_else(|err| {
         error!("Error constructing Config: {}", err);
         process::exit(1);

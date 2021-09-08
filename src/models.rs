@@ -43,23 +43,27 @@ pub struct Attribute {
 pub struct Borrower {
     pub address: String,
     pub total_borrowed: u128,
-    pub borrow_events: Vec<Event>
+    pub borrow_events: Vec<Event>,
 }
 
 impl Borrower {
-    pub fn new(event: Event)  -> Self {
+    pub fn new(event: Event) -> Self {
         if Self::is_borrow_event(&event) == false {
             // Need better error handling here
             panic!("attempted to construct a Borrower from invalid Event");
         }
 
-        let addr = event.attributes.iter()
+        let addr = event
+            .attributes
+            .iter()
             .find(|a| a.key == BORROWER_KEY)
             .unwrap()
             .value
-            .as_str()  // this is gross but I needed a quick fix for
-            .to_string();   // "can't move out of shared reference" error
-        let amount: u128 = event.attributes.iter()
+            .as_str() // this is gross but I needed a quick fix for
+            .to_string(); // "can't move out of shared reference" error
+        let amount: u128 = event
+            .attributes
+            .iter()
             .find(|a| a.key == BORROW_AMOUNT_KEY)
             .unwrap()
             .value
@@ -76,12 +80,10 @@ impl Borrower {
     }
 
     pub fn is_borrow_event(event: &Event) -> bool {
-        
-        event.attributes
+        event
+            .attributes
             .iter()
-            .any(|a| 
-                a.value == BORROW_ACTION.to_string()
-            )
+            .any(|a| a.value == BORROW_ACTION.to_string())
     }
 }
 
@@ -94,22 +96,46 @@ mod tests {
         let expected = Borrower {
             address: "me".to_string(),
             total_borrowed: 1337,
-            borrow_events: vec!(Event { 
-                attributes: vec!(
-                    Attribute { key: "action".to_string(), value: "borrow_stable".to_string() },
-                    Attribute { key: "borrower".to_string(), value: "me".to_string() },
-                    Attribute { key: "borrow_amount".to_string(), value: "1337".to_string() },
-                    Attribute { key: "contract_address".to_string(), value: "uranus".to_string() }
-                )
-            }),
+            borrow_events: vec![Event {
+                attributes: vec![
+                    Attribute {
+                        key: "action".to_string(),
+                        value: "borrow_stable".to_string(),
+                    },
+                    Attribute {
+                        key: "borrower".to_string(),
+                        value: "me".to_string(),
+                    },
+                    Attribute {
+                        key: "borrow_amount".to_string(),
+                        value: "1337".to_string(),
+                    },
+                    Attribute {
+                        key: "contract_address".to_string(),
+                        value: "uranus".to_string(),
+                    },
+                ],
+            }],
         };
-        let event = Event { 
-            attributes: vec!(
-                Attribute { key: "action".to_string(), value: "borrow_stable".to_string() },
-                Attribute { key: "borrower".to_string(), value: "me".to_string() },
-                Attribute { key: "borrow_amount".to_string(), value: "1337".to_string() },
-                Attribute { key: "contract_address".to_string(), value: "uranus".to_string() }
-            )
+        let event = Event {
+            attributes: vec![
+                Attribute {
+                    key: "action".to_string(),
+                    value: "borrow_stable".to_string(),
+                },
+                Attribute {
+                    key: "borrower".to_string(),
+                    value: "me".to_string(),
+                },
+                Attribute {
+                    key: "borrow_amount".to_string(),
+                    value: "1337".to_string(),
+                },
+                Attribute {
+                    key: "contract_address".to_string(),
+                    value: "uranus".to_string(),
+                },
+            ],
         };
 
         let actual = Borrower::new(event);
@@ -120,23 +146,23 @@ mod tests {
     #[test]
     fn is_borrow_event_returns_true() {
         let event = Event {
-            attributes: vec!(Attribute {
+            attributes: vec![Attribute {
                 key: "action".to_string(),
                 value: BORROW_ACTION.to_string(),
-            })
+            }],
         };
         let actual = Borrower::is_borrow_event(&event);
 
         assert_eq!(true, actual);
     }
 
-   #[test]
+    #[test]
     fn is_borrow_event_returns_false() {
         let event = Event {
-            attributes: vec!(Attribute {
+            attributes: vec![Attribute {
                 key: "action".to_string(),
                 value: "something_else".to_string(),
-            })
+            }],
         };
         let actual = Borrower::is_borrow_event(&event);
 

@@ -1,15 +1,15 @@
 pub mod extract;
-pub mod observe;
 pub mod models;
+pub mod observe;
 
-use log::{info};
-use models::{Borrower};
+use log::info;
+use models::Borrower;
 use serde_derive::Deserialize;
-use std::{fs, thread};
 use std::error::Error;
-use std::sync::{Arc, Mutex};
 use std::sync::mpsc;
-use std::sync::mpsc::{Sender, Receiver};
+use std::sync::mpsc::{Receiver, Sender};
+use std::sync::{Arc, Mutex};
+use std::{fs, thread};
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Config {
@@ -21,14 +21,13 @@ pub struct Config {
 impl Config {
     pub fn new(filepath: &str) -> Result<Config, Box<dyn Error>> {
         let json = fs::read_to_string(filepath).unwrap();
-        serde_json::from_str(json.as_str())
-            .map_err(|e| e.into())
+        serde_json::from_str(json.as_str()).map_err(|e| e.into())
     }
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let obs_uri = config.observer_uri;
-    
+
     // Observer websocket keepalive thread
     info!("Starting observer keepalive thread");
     let (obs_tx, obs_rx): (Sender<String>, Receiver<String>) = mpsc::channel();

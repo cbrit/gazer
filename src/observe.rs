@@ -1,16 +1,17 @@
 use log::{debug, error, info, warn};
 use std::net::TcpStream;
-use std::sync::mpsc::{Sender, SendError};
+use std::sync::mpsc::{SendError, Sender};
 use std::thread;
 use std::thread::JoinHandle;
-use tungstenite::WebSocket;
 use tungstenite::handshake::server::Response;
 use tungstenite::protocol::Message;
 use tungstenite::stream::MaybeTlsStream;
+use tungstenite::WebSocket;
 use url::Url;
 
 pub const OBSERVER_ADDRESS: &str = "wss://observer.terra.dev";
-pub const NEW_BLOCK_SUBSCRIPTION: &str = "{ \"subscribe\": \"new_block\", \"chain_id\": \"columbus-4\" }";
+pub const NEW_BLOCK_SUBSCRIPTION: &str =
+    "{ \"subscribe\": \"new_block\", \"chain_id\": \"columbus-4\" }";
 
 pub trait Subscribe {
     fn subscribe(&mut self) -> Result<(), tungstenite::error::Error>;
@@ -21,16 +22,15 @@ impl Subscribe for WebSocket<MaybeTlsStream<TcpStream>> {
     fn subscribe(&mut self) -> Result<(), tungstenite::error::Error> {
         self.write_message(Message::Text(NEW_BLOCK_SUBSCRIPTION.to_string()))
     }
-    
+
     fn relay_messages(&mut self, sender: &Sender<String>) -> Result<(), SendError<String>> {
         let msg = self.read_message().unwrap();
         let msg: String = msg.to_string();
-        
+
         if msg.len() == 0 {
             debug!("Not relaying message as it was empty.");
             Ok(())
-        }
-        else {
+        } else {
             debug!("Got message. Relaying: ");
             if msg.len() >= 20 {
                 debug!("{}... [preview]", &msg[..19]);
@@ -53,25 +53,26 @@ pub fn handle_new_block_stream(uri: String, tx: Sender<String>) {
 
         let sender = tx.clone();
         let uri = uri.clone();
-        let observer_thread: JoinHandle<Result<(), tungstenite::error::Error>> = thread::spawn(move || {
-            info!("Connecting to Observer...");
-            let (mut websocket, _response) = get_connection(uri.as_str());
+        let observer_thread: JoinHandle<Result<(), tungstenite::error::Error>> =
+            thread::spawn(move || {
+                info!("Connecting to Observer...");
+                let (mut websocket, _response) = get_connection(uri.as_str());
 
-            info!("Subscribing to new_block stream...");
-            match websocket.subscribe() {
-                Err(err) => return Err(err),
-                _ => (),
-            };
+                info!("Subscribing to new_block stream...");
+                match websocket.subscribe() {
+                    Err(err) => return Err(err),
+                    _ => (),
+                };
 
-            // Listen for new_block messages and relay them over the channel
-            info!("Begin relaying new_block messages");
-            loop {
-                match websocket.relay_messages(&sender) {
-                    Ok(_) => info!("Data written to channel"),
-                    Err(err) => error!("{:?}", err),
+                // Listen for new_block messages and relay them over the channel
+                info!("Begin relaying new_block messages");
+                loop {
+                    match websocket.relay_messages(&sender) {
+                        Ok(_) => info!("Data written to channel"),
+                        Err(err) => error!("{:?}", err),
+                    }
                 }
-            }
-        });
+            });
 
         // If the connection closes, log the error and re-open it
         match observer_thread.join() {
@@ -80,10 +81,10 @@ pub fn handle_new_block_stream(uri: String, tx: Sender<String>) {
                     Some(err) => error!("Connection to Observer closed: {}", err),
                     None => warn!("Unable to downcast Error from Observer thread failure"),
                 };
-            },
+            }
             _ => (),
         }
-        
+
         info!("Attempting to re-open Observer connection");
     }
 }
