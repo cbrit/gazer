@@ -105,8 +105,8 @@ mod tests {
         .to_string();
 
         let mut expected = Vec::new();
-        expected.push(Transaction { logs: vec![] });
-        expected.push(Transaction { logs: vec![] });
+        expected.push(Transaction { logs: Some(vec![]) });
+        expected.push(Transaction { logs: Some(vec![]) });
         let actual = get_transactions(j);
 
         assert_eq!(expected, actual.unwrap());
@@ -145,7 +145,7 @@ mod tests {
             value: "borrow_stable".to_string(),
         }];
         let txs = vec![Transaction {
-            logs: vec![Log {
+            logs: Some(vec![Log {
                 events: vec![
                     Event {
                         attributes: actual_attrs1,
@@ -154,9 +154,9 @@ mod tests {
                         attributes: actual_attrs2,
                     },
                 ],
-            }],
+            }]),
         }];
-        let actual = get_borrow_events(&txs).unwrap();
+        let actual = get_borrow_events(txs).unwrap();
 
         assert_eq!(expected.len(), actual.len());
         assert_eq!(expected[1], actual[1]);
@@ -169,13 +169,13 @@ mod tests {
             value: "not_borrow".to_string(),
         }];
         let txs = vec![Transaction {
-            logs: vec![Log {
+            logs: Some(vec![Log {
                 events: vec![Event {
                     attributes: actual_attr,
                 }],
-            }],
+            }]),
         }];
-        let actual = get_borrow_events(&txs);
+        let actual = get_borrow_events(txs);
 
         assert_eq!(None, actual);
     }
